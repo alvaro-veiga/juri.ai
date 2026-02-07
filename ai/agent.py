@@ -7,6 +7,9 @@ from agno.knowledge.knowledge import Knowledge
 from agno.tools import tool
 from agno.vectordb.lancedb import LanceDb
 from .literals import TribunalLiteral
+from dotenv import load_dotenv
+
+load_dotenv()
 
 @tool
 def search_datajud_api(cls, tribunal:TribunalLiteral, process_number:str) -> str:

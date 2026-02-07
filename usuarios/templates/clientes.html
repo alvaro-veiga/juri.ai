@@ -80,7 +80,7 @@
                     {% for cliente in clientes %}
                         <tr class="bg-[#f9fafc] rounded-xl">
                             <td class="p-4 font-medium">
-                                <a href="#" class="hover:text-indigo-600">{{ cliente.nome }}</a>
+                                <a href="{% url 'cliente' cliente.id %}" class="hover:text-indigo-600">{{ cliente.nome }}</a>
                             </td>
                             <td class="text-center">{{ cliente.email }}</td>
                             <td class="text-center">{{ cliente.get_tipo_display }}</td>

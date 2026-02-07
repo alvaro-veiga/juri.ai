@@ -8,7 +8,7 @@ from .models import Cliente, Documentos
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from ai.agent import search_datajud_api
+from ai.agent import JuriAI
 
 @ensure_csrf_cookie
 def cadastro(request):
@@ -80,6 +80,8 @@ def clientes(request):
         return redirect('clientes')
 
 def cliente(request, id):
+    agente = JuriAI.build_agent()
+    agente.print_response("Olá")
     cliente = Cliente.objects.get(id=id)
     if request.method == "GET":
         documentos = Documentos.objects.filter(cliente=cliente)

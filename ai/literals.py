@@ -1,5 +1,6 @@
 from typing import Literal
 
+#tipos de tribunais brasileiros, para serem usados na função de busca na API do datajud
 TribunalLiteral = Literal[
         "tst", "tse", "stj", "stm",
         "trf1", "trf2", "trf3", "trf4", "trf5", "trf6",

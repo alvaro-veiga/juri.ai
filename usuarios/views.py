@@ -6,6 +6,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import authenticate
 from .models import Cliente
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 
 @ensure_csrf_cookie
 def cadastro(request):
@@ -75,3 +76,23 @@ def clientes(request):
         
         messages.add_message(request, constants.SUCCESS, 'Cliente cadastrado com sucesso!')
         return redirect('clientes')
+
+def cliente(request, id):
+    cliente = Cliente.objects.get(id=id)
+    if request.method == "GET":
+        return render(request, 'cliente.html', {'cliente': cliente})
+
+    elif request.method == 'POST':
+        tipo = request.POST.get('tipo')
+        documento = request.FILES.get('documento')
+        data = request.POST.get('data')
+        
+        documentos = Documentos(
+            cliente=cliente,
+            tipo=tipo,
+            arquivo=documento,
+            data_upload=data
+        )
+        documentos.save()
+
+        return redirect(reverse('cliente', kwargs={'id': cliente.id}))

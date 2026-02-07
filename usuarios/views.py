@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.messages import constants
-from django.contrib import messages
+from django.contrib import messages, auth
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.contrib.auth import authenticate
 
 @ensure_csrf_cookie
 def cadastro(request):
     if request.method == 'GET':
-        # Garante que a sessão existe
         request.session.modified = True
         return render(request, 'cadastro.html')
     elif request.method == 'POST':
@@ -36,3 +36,18 @@ def cadastro(request):
         
         messages.add_message(request, constants.SUCCESS, 'Usuário cadastrado com sucesso!')
         return redirect('login')
+
+def login(request):
+    if request.method == 'GET':
+        return render(request, 'login.html')
+    elif request.method == 'POST':
+        username = request.POST.get('username')
+        senha = request.POST.get('senha')
+        
+        user = authenticate(username=username, password=senha)
+        if user is not None:
+            auth.login(request, user)
+            return redirect('clientes')
+        else:
+            messages.add_message(request, constants.ERROR, 'Usuário ou senha inválidos.')
+            return redirect('login')

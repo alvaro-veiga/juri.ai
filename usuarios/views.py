@@ -4,7 +4,8 @@ from django.contrib import messages, auth
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import authenticate
-from .models import Cliente
+from .models import Cliente, Documentos
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 
@@ -80,7 +81,8 @@ def clientes(request):
 def cliente(request, id):
     cliente = Cliente.objects.get(id=id)
     if request.method == "GET":
-        return render(request, 'cliente.html', {'cliente': cliente})
+        documentos = Documentos.objects.filter(cliente=cliente)
+        return render(request, 'cliente.html', {'cliente': cliente, 'documentos': documentos})
 
     elif request.method == 'POST':
         tipo = request.POST.get('tipo')

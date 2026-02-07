@@ -8,6 +8,7 @@ from .models import Cliente, Documentos
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from ai.agent import search_datajud_api
 
 @ensure_csrf_cookie
 def cadastro(request):

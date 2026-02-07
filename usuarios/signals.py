@@ -4,4 +4,4 @@ from .models import Documentos
 from ai.tasks import ocr_and_markdown_file
 @receiver(post_save, sender=Documentos)
 def save_documents(sender, instance, created, **kwargs):
-    ocr_and_markdown_file()
+    ocr_and_markdown_file(instance.id)

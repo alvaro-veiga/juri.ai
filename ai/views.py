@@ -8,7 +8,7 @@ from .agent import JuriAI, SecretariaAI
 from typing import Iterator
 from agno.agent import RunOutputEvent, RunEvent, RunOutput
 from django.http import StreamingHttpResponse
-from ai.agent_langchain import JurisprudenciaAI
+from ai.agent_langchain import JurisprudenciaAI, RouterAgent
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.messages import constants
@@ -30,21 +30,30 @@ def chat(request, id):
 @csrf_exempt
 def stream_resposta(request):
     id_pergunta = request.POST.get('id_pergunta')
-
     pergunta = get_object_or_404(Pergunta, id=id_pergunta)
 
     def gerar_resposta():
-        
-        agent = JuriAI.build_agent(knowledge_filters={'cliente_id': pergunta.cliente.id})
-        
-        stream: Iterator[RunOutputEvent] = agent.run(pergunta.pergunta, stream=True, stream_events=True)
+        router = RouterAgent()
+        decisao = router.run(pergunta.pergunta)
+
+        if decisao.agente == "secretaria":
+            agent = SecretariaAI.build_agent(session_id=f"secretaria:{pergunta.cliente.id}")
+        else:
+            agent = JuriAI.build_agent(knowledge_filters={'cliente_id': pergunta.cliente.id})
+
+        stream = agent.run(pergunta.pergunta,stream=True,stream_events=True)
+
         for chunk in stream:
             if chunk.event == RunEvent.run_content:
                 yield str(chunk.content)
-            
-            if chunk.event == RunEvent.tool_call_completed:
-                context = ContextRag(content=chunk.tool.result, tool_name=chunk.tool.tool_name, tool_args=chunk.tool.tool_args, pergunta=pergunta)
-                context.save()
+
+            if (decisao.agente == "juri" and chunk.event == RunEvent.tool_call_completed):
+                ContextRag.objects.create(
+                    content=chunk.tool.result,
+                    tool_name=chunk.tool.tool_name,
+                    tool_args=chunk.tool.tool_args,
+                    pergunta=pergunta
+                )
 
     response = StreamingHttpResponse(
         gerar_resposta(),
@@ -52,7 +61,6 @@ def stream_resposta(request):
     )
     response['Cache-Control'] = 'no-cache'
     response['X-Accel-Buffering'] = 'no'
-    
     return response
 
 def ver_referencias(request, id):

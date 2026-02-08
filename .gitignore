@@ -46,4 +46,6 @@ staticfiles/
 /lancedb
 lancedb/
 
+# Arquivos de configuração sensíveis
 client_secret.json
+token.json

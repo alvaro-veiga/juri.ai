@@ -17,6 +17,11 @@ class JurisprudenciaOutput(BaseModel):
     red_flags: list[str] = Field(..., description='Red flags críticas identificadas')
 
 
+class RouterOutput(BaseModel):
+    agente: str = Field(...,description="Agente que deve responder: 'juri' ou 'secretaria'")
+    justificativa: str
+
+
 class BaseAgent(ABC):
     llm =  ChatOpenAI(model_name="gpt-4.1-mini")
     language: str = "pt-br"
@@ -141,3 +146,40 @@ class JurisprudenciaAI(BaseAgent):
     def run(self, documento: str):
         chain = self._prompt() | self.llm.with_structured_output(JurisprudenciaOutput)
         return chain.invoke({"documento": documento})
+
+class RouterAgent(BaseAgent):
+
+    PROMPT = """
+        Você é um roteador inteligente de agentes.
+
+        Sua tarefa é decidir QUAL agente deve responder à mensagem do usuário.
+
+        Agentes disponíveis:
+
+        1. juri
+        - Questões jurídicas
+        - Análise de documentos
+        - Petições, contratos, recursos
+        - Jurisprudência, riscos legais
+
+        2. secretaria
+        - Agendamento de reuniões
+        - Horários
+        - Confirmações
+        - Dúvidas administrativas
+
+        REGRAS IMPORTANTES:
+        - Retorne APENAS o agente mais adequado
+        - Se houver dúvida, prefira "juri"
+        - Não responda a pergunta do usuário
+    """
+
+    def _prompt(self):
+        return ChatPromptTemplate.from_messages([
+            ("system", self.PROMPT),
+            ("human", "Decida qual agente deve responder à seguinte mensagem do usuário:\n\n{mensagem}")
+        ])
+    
+    def run(self, mensagem: str):
+        chain = self._prompt() | self.llm.with_structured_output(RouterOutput)
+        return chain.invoke({"mensagem": mensagem})

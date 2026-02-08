@@ -14,6 +14,7 @@ from django.contrib import messages
 from django.contrib.messages import constants
 import time
 import json
+from .wrapper_evolution_api import SendMessage
 
 @csrf_exempt
 def chat(request, id):
@@ -126,4 +127,5 @@ def webhook_whatsapp(request):
     agent = SecretariaAI.build_agent(session_id=phone)
     response: RunOutput = agent.run(message)
     print(response.content)
+    send_message = SendMessage().send_message('Arcane3', {'number': phone, 'textMessage': {'text': response.content}})
     return JsonResponse({'response': response.content})

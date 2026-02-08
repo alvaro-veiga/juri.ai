@@ -1,6 +1,6 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-from usuarios.models import Cliente
+from usuarios.models import Cliente,Documentos
 from .models import Pergunta, ContextRag, AnaliseJurisprudencia
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -8,6 +8,11 @@ from .agent import JuriAI
 from typing import Iterator
 from agno.agent import RunOutputEvent, RunEvent
 from django.http import StreamingHttpResponse
+from ai.agent_langchain import JurisprudenciaAI
+from django.shortcuts import redirect
+from django.contrib import messages
+from django.contrib.messages import constants
+import time
 
 @csrf_exempt
 def chat(request, id):
@@ -63,3 +68,50 @@ def analise_jurisprudencia(request, id):
         'documento': documento,
         'analise': analise
     })
+@csrf_exempt
+def processar_analise(request, id):
+    if request.method != 'POST':
+        messages.add_message(request, constants.ERROR, 'Método não permitido.')
+        return redirect('analise_jurisprudencia', id=id)
+    
+    try:
+        documento = get_object_or_404(Documentos, id=id)
+        start_time = time.time()
+        
+        agent = JurisprudenciaAI()
+        response = agent.run(documento.content)
+        
+        processing_time = int(time.time() - start_time)
+        
+        indice = response.indice_risco
+        if indice <= 30:
+            classificacao = "Baixo"
+        elif indice <= 60:
+            classificacao = "Médio"
+        elif indice <= 80:
+            classificacao = "Alto"
+        else:
+            classificacao = "Crítico"
+        
+        analise, created = AnaliseJurisprudencia.objects.update_or_create(
+            documento=documento,
+            defaults={
+                'indice_risco': indice,
+                'classificacao': classificacao,
+                'erros_coerencia': response.erros_coerencia,
+                'riscos_juridicos': response.riscos_juridicos,
+                'problemas_formatacao': response.problemas_formatacao,
+                'red_flags': response.red_flags,
+                'tempo_processamento': processing_time
+            }
+        )
+        
+        if created:
+            messages.add_message(request, constants.SUCCESS, 'Análise realizada e salva com sucesso!')
+        else:
+            messages.add_message(request, constants.SUCCESS, 'Análise atualizada com sucesso!')
+        
+        return redirect('analise_jurisprudencia', id=id)
+    except Exception as e:
+        messages.add_message(request, constants.ERROR, f'Erro ao processar análise: {str(e)}')
+        return redirect('analise_jurisprudencia', id=id)

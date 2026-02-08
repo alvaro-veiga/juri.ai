@@ -5,6 +5,7 @@ from django.conf import settings
 from abc import abstractmethod
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
+from abc import ABC
 
 load_dotenv()
 

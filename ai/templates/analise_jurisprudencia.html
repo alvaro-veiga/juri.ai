@@ -12,7 +12,7 @@
                 </div>
                 <div class="flex gap-3">
                     {% if not analise %}
-                    <form method="POST" action="">
+                    <form method="POST" action="{% url 'processar_analise' documento.id %}">
                         {% csrf_token %}
                         <button type="submit" class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                             Analisar Documento

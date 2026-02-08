@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from usuarios.models import Cliente
-from .models import Pergunta
+from .models import Pergunta, ContextRag
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from .agent import JuriAI
@@ -34,6 +34,10 @@ def stream_resposta(request):
         for chunk in stream:
             if chunk.event == RunEvent.run_content:
                 yield str(chunk.content)
+            
+            if chunk.event == RunEvent.tool_call_completed:
+                context = ContextRag(content=chunk.tool.result, tool_name=chunk.tool.tool_name, tool_args=chunk.tool.tool_args, pergunta=pergunta)
+                context.save()
 
     response = StreamingHttpResponse(
         gerar_resposta(),
@@ -43,3 +47,11 @@ def stream_resposta(request):
     response['X-Accel-Buffering'] = 'no'
     
     return response
+
+def ver_referencias(request, id):
+    pergunta = get_object_or_404(Pergunta, id=id)
+    contextos = ContextRag.objects.filter(pergunta=pergunta)
+    return render(request, 'ver_referencias.html', {
+        'pergunta': pergunta,
+        'contextos': contextos
+    })

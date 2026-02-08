@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 @tool
-def search_datajud_api(cls, tribunal:TribunalLiteral, process_number:str) -> str:
+def search_datajud_api(tribunal:TribunalLiteral, process_number:str) -> str:
     """
     Busca informações de um processo judicial na API pública do DataJud (CNJ).
     

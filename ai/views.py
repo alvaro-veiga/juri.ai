@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from usuarios.models import Cliente
-from .models import Pergunta, ContextRag
+from .models import Pergunta, ContextRag, AnaliseJurisprudencia
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from .agent import JuriAI
@@ -54,4 +54,12 @@ def ver_referencias(request, id):
     return render(request, 'ver_referencias.html', {
         'pergunta': pergunta,
         'contextos': contextos
+    })
+
+def analise_jurisprudencia(request, id):
+    documento = get_object_or_404(Documentos, id=id)
+    analise = AnaliseJurisprudencia.objects.filter(documento=documento).first()
+    return render(request, 'analise_jurisprudencia.html', {
+        'documento': documento,
+        'analise': analise
     })

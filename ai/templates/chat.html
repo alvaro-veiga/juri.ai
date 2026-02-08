@@ -101,7 +101,7 @@
 
             document.getElementById("chat").appendChild(novaMensagem);
             
-            const streamResponse = await fetch("{% url 'stream_response' %}",{
+            const streamResponse = await fetch("{% url 'stream_resposta' %}",{
                 method: "POST",
                 headers: {
                      "Content-Type": "application/x-www-form-urlencoded",

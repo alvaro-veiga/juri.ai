@@ -5,6 +5,9 @@ from .models import Pergunta
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from .agent import JuriAI
+from typing import Iterator
+from agno.agent import RunOutputEvent, RunEvent
+from django.http import StreamingHttpResponse
 
 @csrf_exempt
 def chat(request, id):
@@ -18,10 +21,25 @@ def chat(request, id):
         return JsonResponse({'id': pergunta_obj.id, 'pergunta': pergunta_obj.pergunta})
 
 @csrf_exempt
-def stream_response(request):
-    id_pergunta = request.GET.get('id_pergunta')
+def stream_resposta(request):
+    id_pergunta = request.POST.get('id_pergunta')
+
     pergunta = get_object_or_404(Pergunta, id=id_pergunta)
 
-    agente = JuriAI.build_agent()
-    resposta = agente.print_response(pergunta.pergunta)
-    return JsonResponse({'resposta': resposta})
+    def gerar_resposta():
+        
+        agent = JuriAI.build_agent(knowledge_filters={'cliente_id': pergunta.cliente.id})
+        
+        stream: Iterator[RunOutputEvent] = agent.run(pergunta.pergunta, stream=True, stream_events=True)
+        for chunk in stream:
+            if chunk.event == RunEvent.run_content:
+                yield str(chunk.content)
+
+    response = StreamingHttpResponse(
+        gerar_resposta(),
+        content_type='text/plain; charset=utf-8'
+    )
+    response['Cache-Control'] = 'no-cache'
+    response['X-Accel-Buffering'] = 'no'
+    
+    return response

@@ -3,6 +3,45 @@
 __pycache__/
 *.pyc
 *.pyo
-*.pyd 
-/media
+*.pyd
+.media
 db.sqlite3
+/lancedb
+
+# Arquivos de desenvolvimento
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+
+# Ambientes virtuais
+venv/
+ENV/
+env/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Banco de dados vetorial
+/lancedb
+lancedb/

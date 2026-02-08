@@ -4,7 +4,7 @@ from usuarios.models import Cliente,Documentos
 from .models import Pergunta, ContextRag, AnaliseJurisprudencia
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from .agent import JuriAI
+from .agent import JuriAI, SecretariaAI
 from typing import Iterator
 from agno.agent import RunOutputEvent, RunEvent
 from django.http import StreamingHttpResponse
@@ -16,6 +16,8 @@ import time
 
 @csrf_exempt
 def chat(request, id):
+    secretaria_ai = SecretariaAI.build_agent()
+    secretaria_ai.print_response("Olá! pode agendar uma reunião para amanhã às 15h?")
     cliente = Cliente.objects.get(id=id)
     if request.method == 'GET':
         return render(request, 'chat.html', {'cliente': cliente})

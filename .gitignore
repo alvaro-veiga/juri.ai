@@ -45,3 +45,5 @@ staticfiles/
 # Banco de dados vetorial
 /lancedb
 lancedb/
+
+client_secret.json

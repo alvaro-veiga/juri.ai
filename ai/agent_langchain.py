@@ -133,11 +133,11 @@ class JurisprudenciaAI(BaseAgent):
         """
     
     def _prompt(self):
-        prompt = ChatPromptTemplate.from_messages([
+        return ChatPromptTemplate.from_messages([
             ("system", self.PROMPT),
-            ('human', 'Analise o seguinte documento jurídico e gere a análise completa conforme as instruções:\n\n{documento}')
-            ])
+            ("human", "Analise o seguinte documento jurídico e gere a análise completa conforme as instruções:\n\n{documento}")
+        ])
 
     def run(self, documento: str):
         chain = self._prompt() | self.llm.with_structured_output(JurisprudenciaOutput)
-        return chain.invoke({'documento': documento})
+        return chain.invoke({"documento": documento})

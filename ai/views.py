@@ -17,8 +17,6 @@ import json
 
 @csrf_exempt
 def chat(request, id):
-    secretaria_ai = SecretariaAI.build_agent()
-    secretaria_ai.print_response("Olá! pode agendar uma reunião para amanhã às 15h?")
     cliente = Cliente.objects.get(id=id)
     if request.method == 'GET':
         return render(request, 'chat.html', {'cliente': cliente})

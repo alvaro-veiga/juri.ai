@@ -203,7 +203,7 @@
                     </form>
                     {% endif %}
                     <button class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 hover:bg-gray-50" {% if not analise %}disabled{% endif %}>
-                        Baixar relatório em PDF
+                        <a href="{% url 'gerar_pdf_analise' analise.id %}">Baixar relatório em PDF</a>
                     </button>
                 </div>
             </div>

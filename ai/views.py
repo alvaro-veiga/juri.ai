@@ -12,6 +12,9 @@ from ai.agent_langchain import JurisprudenciaAI, RouterAgent
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.messages import constants
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from django.http import HttpResponse
 import time
 import json
 from .wrapper_evolution_api import SendMessage
@@ -137,3 +140,14 @@ def webhook_whatsapp(request):
     print(response.content)
     send_message = SendMessage().send_message('Arcane3', {'number': phone, 'textMessage': {'text': response.content}})
     return JsonResponse({'response': response.content})
+
+def gerar_pdf_analise(request, id):
+
+    analise = get_object_or_404(AnaliseJurisprudencia, id=id)
+    html_string = render_to_string('pdf_analise.html', {'analise': analise})
+    html = HTML(string=html_string)
+    pdf_content = html.write_pdf()
+
+    response = HttpResponse(pdf_content, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="analise_jurisprudencia_{id}.pdf"'
+    return response

@@ -22,7 +22,7 @@ class RouterOutput(BaseModel):
 
 class BaseAgent(ABC):
     llm =  ChatGoogleGenerativeAI(
-        model="gemini-3-flash-preview",
+        model="gemini-2.5-flash",
         temperature=0.2,
     )
     language: str = "pt-br"

@@ -102,7 +102,7 @@ class JuriAI:
         return Agent(
             name=cls.AGENT_NAME,
             description=cls.AGENT_DESCRIPTION,
-            model=Gemini("gemini-3-flash-preview", temperature=0.2),
+            model=Gemini("gemini-2.5-flash", temperature=0.2),
             tools=[search_datajud_api,],
             instructions=cls.INSTRUCTIONS,
             db=db,
@@ -189,7 +189,7 @@ class SecretariaAI:
         return Agent(
             name="Assistente de Secretaria Virtual",
             description="Assistente virtual para atendimento ao cliente e agendamento de reuniões",
-            model=Gemini("gemini-3-flash-preview", temperature=0.2),
+            model=Gemini("gemini-2.5-flash", temperature=0.2),
             tools=[GoogleCalendarTools(
                 credentials_path=str(cls.CREDENTIALS_PATH),
                 allow_update=True

@@ -2,7 +2,7 @@ import json
 import requests
 from agno.agent import Agent
 from agno.db.sqlite import SqliteDb
-from agno.knowledge.embedder.openai import OpenAIEmbedder
+from agno.knowledge.embedder.google import GeminiEmbedder
 from agno.knowledge.knowledge import Knowledge
 from agno.tools import tool
 from agno.vectordb.lancedb import LanceDb
@@ -10,7 +10,6 @@ from .literals import TribunalLiteral
 from dotenv import load_dotenv
 from tzlocal import get_localzone_name
 from agno.tools.googlecalendar import GoogleCalendarTools
-from agno.models.openai import OpenAIChat
 from agno.models.google import Gemini
 from tzlocal import get_localzone_name
 import datetime
@@ -89,7 +88,7 @@ class JuriAI:
         vector_db=LanceDb(
             table_name=VECTOR_DB_TABLE,
             uri=VECTOR_DB_URI,
-            embedder=OpenAIEmbedder()
+            embedder=GeminiEmbedder()
         ),
     )
 
@@ -103,6 +102,7 @@ class JuriAI:
         return Agent(
             name=cls.AGENT_NAME,
             description=cls.AGENT_DESCRIPTION,
+            model=Gemini("gemini-3-flash-preview", temperature=0.2),
             tools=[search_datajud_api,],
             instructions=cls.INSTRUCTIONS,
             db=db,
@@ -175,7 +175,7 @@ class SecretariaAI:
         vector_db=LanceDb(
             table_name=VECTOR_DB_TABLE,
             uri=VECTOR_DB_URI,
-            embedder=OpenAIEmbedder()
+            embedder=GeminiEmbedder()
         ),
     )
     

@@ -1,8 +1,5 @@
-from json import load
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
-from django.conf import settings
 from abc import abstractmethod
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field

@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from tzlocal import get_localzone_name
 from agno.tools.googlecalendar import GoogleCalendarTools
 from agno.models.openai import OpenAIChat
+from agno.models.google import Gemini
 from tzlocal import get_localzone_name
 import datetime
 from django.conf import settings
@@ -188,7 +189,7 @@ class SecretariaAI:
         return Agent(
             name="Assistente de Secretaria Virtual",
             description="Assistente virtual para atendimento ao cliente e agendamento de reuniões",
-            model=OpenAIChat(id="gpt-4o-mini"),
+            model=Gemini(model="gemini-3-flash-preview", temperature=0.2),
             tools=[GoogleCalendarTools(
                 credentials_path=str(cls.CREDENTIALS_PATH),
                 allow_update=True

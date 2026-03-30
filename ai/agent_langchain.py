@@ -1,6 +1,7 @@
 from json import load
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from django.conf import settings
 from abc import abstractmethod
 from langchain_core.prompts import ChatPromptTemplate
@@ -23,7 +24,10 @@ class RouterOutput(BaseModel):
 
 
 class BaseAgent(ABC):
-    llm =  ChatOpenAI(model_name="gpt-4.1-mini")
+    llm =  ChatGoogleGenerativeAI(
+        model="gemini-3-flash-preview",
+        temperature=0.2,
+    )
     language: str = "pt-br"
 
     @abstractmethod

@@ -202,9 +202,11 @@
                         </button>
                     </form>
                     {% endif %}
-                    <button class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 hover:bg-gray-50" {% if not analise %}disabled{% endif %}>
-                        <a href="{% url 'gerar_pdf_analise' analise.id %}">Baixar relatório em PDF</a>
-                    </button>
+                    {% if analise %}
+                    <a href="{% url 'gerar_pdf_analise' analise.id %}" class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 hover:bg-gray-50">Baixar relatório em PDF</a>
+                    {% else %}
+                    <button class="rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 hover:bg-gray-50" disabled>Baixar relatório em PDF</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
